@@ -58,10 +58,11 @@ Class RedClient{
 	public function sendTransaction($inChannel, $inPassData, $inFunction){
 		$this->returnFunction = $inFunction;
 		$pubsub = $this->redClient_sub->pubSubLoop();
-		$pubsub->subscribe('theCallback');
+		$tmpCallbackChannel = HopperUtil::getInstance()->guid();
+		$pubsub->subscribe($tmpCallbackChannel);
 
 		$theArray = array();
-		$theArray['returnChannel'] = 'theCallback';
+		$theArray['returnChannel'] = $tmpCallbackChannel;
 		$theArray['data'] = $inPassData;
 
 		$this->redClient_pub->publish($inChannel, HopperUtil::getInstance()->phpToJson($theArray));
@@ -71,7 +72,7 @@ Class RedClient{
 				case 'subscribe':
 					break;
 				case 'message':
-					if($message->channel == 'theCallback'){
+					if($message->channel == $tmpCallbackChannel){
 						$pubsub->unsubscribe();
 						unset($pubsub);
 						$inFunction($message->payload);
