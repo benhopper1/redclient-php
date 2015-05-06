@@ -149,4 +149,4 @@ function runTest(){
 	echo('DONE');
 }
 
-runTest();
+//runTest();
